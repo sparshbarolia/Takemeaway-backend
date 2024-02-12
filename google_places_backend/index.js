@@ -29,6 +29,28 @@ app.get('/all-places/:title/:loc', async (req, res) => {
     }
   });
 
+app.get('/details/:placeid', async (req, res) => {
+    const {placeid}= req.params;
+    try {
+    const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?fields=name%2Cformatted_address%2Cgeometry%2Cformatted_phone_number%2Curl%2Crating%2Cformatted_phone_number%2Cphotos%2Creviews&place_id=${placeid}&key=${process.env.API_KEY}`);
+      
+      if (!response.ok) {
+        throw new Error("Error generated");
+      }
+  
+      const data = await response.json();
+  
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  
+      res.json(data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
 app.listen(8000,() => {
     console.log("Server is working at localhost:8000");
 })
