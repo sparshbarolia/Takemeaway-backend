@@ -8,9 +8,14 @@ const app = express();
 app.use(cors());
 
 app.get('/all-places/:title/:loc', async (req, res) => {
+    const {next_page_token} = req.query;
     const {title , loc }= req.params;
     try {
-    const response = await fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${title}%20in%20${loc}&key=${process.env.API_KEY}`);
+    let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${title}%20in%20${loc}&key=${process.env.API_KEY}&maxResults=10`;
+
+    if(next_page_token) url = url+`&pagetoken=${next_page_token}`;
+
+    const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error("Error generated");
